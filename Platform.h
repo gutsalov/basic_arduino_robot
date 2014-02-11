@@ -4,9 +4,15 @@
 #include <Arduino.h>
 #include <AFMotor.h>
 
+enum Motors {
+  LeftMotor,
+  RightMotor,
+  NumberOfMotors
+};
+
 class Platform {
   private:
-    AF_DCMotor ** motors;
+    AF_DCMotor motors[NumberOfMotors];
   public:
     enum Direction {
       Forward,
