@@ -11,11 +11,12 @@ class Platform {
     enum Direction {
       Forward,
       Backward,
-      Right,
-      Left
+      Left,
+      Right
     };
-    Platform(int leftId, int rightId);
+    Platform(uint8_t leftId, uint8_t rightId);
     void move(Direction);
+    void stop();
 };
 
 #endif
