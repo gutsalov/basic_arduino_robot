@@ -1,24 +1,41 @@
 #include <AFMotor.h>
 
 #include "Platform.h"
+#include "State.h"
+#include "IdleState.h"
+#include "ForwardState.h"
 
 #define MOTOR_ID_LEFT  1
-#define MOTOR_ID_RIGHT 2
+#define MOTOR_ID_RIGHT 4
 
-Platform platform(MOTOR_ID_LEFT, MOTOR_ID_RIGHT);
- 
+#define DELAY 1000
+
+Platform * platform;
+State ** states;
+State * currentState;
+
+void switchToState(State * newState) {
+  newState->enterState(currentState->getId());
+  currentState = newState;
+}
+
 void setup() {
+  Serial.begin(9600);
+  platform = new Platform(MOTOR_ID_LEFT, MOTOR_ID_RIGHT);
+  states = new State * [NumberOfStates];
+  states[StateIdle] = new IdleState(platform);
+  states[StateForward] = new ForwardState(platform);
+  switchToState(states[StateIdle]);
 }
 
 void loop() {
-  platform.move(Platform::Forward);
-  delay(1000);
-  platform.move(Platform::Backward);
-  delay(1000);
-  platform.move(Platform::Left);
-  delay(1000);
-  platform.move(Platform::Right);
-  delay(1000);
-  platform.stop();
-  delay(1000);
+  if (Serial.available()) {
+    int event = Serial.read();
+    StateId newStateId = currentState->handleEvent(event);
+    if (newStateId != currentState->getId()) {
+      switchToState(states[newStateId]);
+    }
+  }
 }
+
+

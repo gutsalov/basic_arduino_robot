@@ -4,22 +4,17 @@
 #include <Arduino.h>
 #include <AFMotor.h>
 
-enum Motors {
-  LeftMotor,
-  RightMotor,
-  NumberOfMotors
+enum Direction {
+  Forward,
+  Backward,
+  Left,
+  Right
 };
 
 class Platform {
   private:
-    AF_DCMotor motors[NumberOfMotors];
+    AF_DCMotor ** motors;
   public:
-    enum Direction {
-      Forward,
-      Backward,
-      Left,
-      Right
-    };
     Platform(uint8_t leftId, uint8_t rightId);
     void move(Direction);
     void stop();
