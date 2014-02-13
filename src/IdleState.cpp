@@ -8,9 +8,15 @@ void IdleState::enterState(int prev) {
 	platform->stop();
 }
 
-StateId IdleState::handleEvent(int event) {
-	if (event == EVENT_FORWARD) {
-		return StateForward;
+StateId IdleState::handleEvent(Event * event) {
+	if (event->getType() == ControlEvent) {
+		switch (event->getData()) {
+			case EVENT_FORWARD:
+				return StateForward;
+				break;
+			default:
+				return getId();
+		};
 	}
 	return getId();
 }

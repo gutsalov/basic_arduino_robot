@@ -8,7 +8,7 @@ class IdleState: public State {
   public:
     IdleState(Platform * platform);
     virtual void enterState(int prevState);
-    virtual StateId handleEvent(int event);
+    virtual StateId handleEvent(Event * event);
 };
 
 #endif

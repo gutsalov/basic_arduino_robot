@@ -9,9 +9,15 @@ void ForwardState::enterState(int prev) {
 	platform->move(Forward);
 }
 
-StateId ForwardState::handleEvent(int event) {
-	if (event == EVENT_STOP) {
-		return StateIdle;
+StateId ForwardState::handleEvent(Event * event) {
+	if (event->getType() == ControlEvent) {
+		switch (event->getData()) {
+			case EVENT_STOP:
+				return StateIdle;
+				break;
+			default:
+				return getId();
+		};
 	}
-	return StateForward;
+	return getId();
 }
