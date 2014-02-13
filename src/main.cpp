@@ -18,26 +18,26 @@ State ** states;
 State * currentState;
 
 void switchToState(State * newState) {
-  newState->enterState(currentState->getId());
-  currentState = newState;
+	newState->enterState(currentState->getId());
+	currentState = newState;
 }
 
 void setup() {
-  Serial.begin(9600);
-  platform = new Platform(MOTOR_ID_LEFT, MOTOR_ID_RIGHT);
-  states = new State * [NumberOfStates];
-  states[StateIdle] = new IdleState(platform);
-  states[StateForward] = new ForwardState(platform);
-  switchToState(states[StateIdle]);
+	Serial.begin(9600);
+	platform = new Platform(MOTOR_ID_LEFT, MOTOR_ID_RIGHT);
+	states = new State * [NumberOfStates];
+	states[StateIdle] = new IdleState(platform);
+	states[StateForward] = new ForwardState(platform);
+	switchToState(states[StateIdle]);
 }
 
 void loop() {
-  if (Serial.available()) {
-    int event = Serial.read();
-    StateId newStateId = currentState->handleEvent(event);
-    if (newStateId != currentState->getId()) {
-      switchToState(states[newStateId]);
-    }
-  }
+	if (Serial.available()) {
+		int event = Serial.read();
+		StateId newStateId = currentState->handleEvent(event);
+		if (newStateId != currentState->getId()) {
+			switchToState(states[newStateId]);
+		}
+	}
 }
 

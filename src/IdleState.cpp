@@ -5,12 +5,12 @@ IdleState::IdleState(Platform * platform): State(StateIdle, platform) {
 }
 
 void IdleState::enterState(int prev) {
-  platform->stop();
+	platform->stop();
 }
 
 StateId IdleState::handleEvent(int event) {
-  if (event == EVENT_FORWARD) {
-    return StateForward;
-  }
-  return getId();
+	if (event == EVENT_FORWARD) {
+		return StateForward;
+	}
+	return getId();
 }

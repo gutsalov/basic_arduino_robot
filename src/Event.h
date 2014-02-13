@@ -9,4 +9,8 @@
 #define EVENT_FLEFT    0x34
 #define EVENT_RIGHT    0x36
 
-#endif
+enum EventType {
+
+};
+
+#endif //_Event_h_
