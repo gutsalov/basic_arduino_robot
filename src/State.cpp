@@ -7,3 +7,23 @@ StateId State::getId(void) {
   return id;
 }
 
+StateId State::handleEvents(QueueList<Event*> * eventQueue) {
+	if (eventQueue->isEmpty()) {
+		return getId();
+	}
+	Event * event = eventQueue->pop();
+	StateId state = getId();
+	if (event->getType() == ControlEvent) {
+		switch (event->getData()) {
+			case EVENT_STOP:
+				state = StateIdle;
+				break;
+			case EVENT_FORWARD:
+				state = StateForward;
+				break;
+			default:;
+		};
+	}
+	delete event;
+	return state;
+}

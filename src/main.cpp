@@ -41,16 +41,18 @@ void setup() {
 }
 
 void loop() {
-	Event * event;
+	Event * event = NULL;
 	for (InputDevice ** device = inputDevices; device < inputDevices + NUMBER_OF_INPUT_DEVICES; device++) {
 		event = (*device)->checkEvent();
 		if (event != NULL) {
-
+			eventQueue.push(event);
 		}
 	}
-	StateId newStateId = currentState->handleEvent(event);
-	if (newStateId != currentState->getId()) {
-		switchToState(states[newStateId]);
+	if (!eventQueue.isEmpty()) {
+		StateId newStateId = currentState->handleEvents(&eventQueue);
+		if (newStateId != currentState->getId()) {
+			switchToState(states[newStateId]);
+		}
 	}
 }
 
