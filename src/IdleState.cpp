@@ -4,6 +4,7 @@
 IdleState::IdleState(Platform * platform): State(StateIdle, platform) {
 }
 
-void IdleState::enterState(int prev) {
+void IdleState::enterState(StateId prevState) {
+	State::enterState(prevState);
 	platform->stop();
 }

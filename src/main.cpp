@@ -11,6 +11,7 @@
 #include "TurnState.h"
 #include "SerialControl.h"
 #include "DistanceMeter.h"
+#include "Timer.h"
 
 #define MOTOR_ID_LEFT  1
 #define MOTOR_ID_RIGHT 4
@@ -18,7 +19,9 @@
 #define SONAR_PIN_TRIGGER A0
 #define SONAR_PIN_ECHO A1
 
-#define NUMBER_OF_INPUT_DEVICES 2
+#define NUMBER_OF_INPUT_DEVICES 3
+
+#define TIMER_PERIOD 100
 
 #define DELAY 1000
 
@@ -40,6 +43,7 @@ void setup() {
 	inputDevices = new InputDevice * [NUMBER_OF_INPUT_DEVICES];
 	inputDevices[0] = new SerialControl();
 	inputDevices[1] = new DistanceMeter(SONAR_PIN_TRIGGER, SONAR_PIN_ECHO);
+	inputDevices[2] = new Timer(TIMER_PERIOD);
 	/* states */
 	states = new State * [NumberOfStates];
 	states[StateIdle] = new IdleState(platform);

@@ -13,7 +13,8 @@
 
 enum EventType {
 	ControlEvent,
-	DistanceEvent
+	DistanceEvent,
+	TimerEvent
 };
 
 class Event {

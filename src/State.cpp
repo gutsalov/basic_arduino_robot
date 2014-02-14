@@ -1,10 +1,18 @@
 #include "State.h"
 
 State::State(StateId stateId, Platform * platf): id(stateId), platform(platf) {
+	previous = Invalid;
 }
 
 StateId State::getId(void) {
   return id;
+}
+StateId State::getPrevStateId(void) {
+	return previous;
+}
+
+void State::enterState(StateId prev) {
+	previous = prev;
 }
 
 StateId State::handleEvents(QueueList<Event*> * eventQueue) {

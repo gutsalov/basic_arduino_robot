@@ -11,19 +11,22 @@ enum StateId {
   StateForward,
   StateTurnLeft,
   StateTurnRight,
-  NumberOfStates
+  NumberOfStates,
+  Invalid
 };
 
 
 class State {
   private:
     StateId id;
+    StateId previous;
   protected:
     Platform * platform;
+    StateId getPrevStateId(void);
   public:
     State(StateId stateId, Platform * platform);
     StateId getId(void);
-    virtual void enterState(int prev) = 0;
+    virtual void enterState(StateId prev);
     virtual StateId handleEvents(QueueList<Event*> * eventQueue);
 };
 

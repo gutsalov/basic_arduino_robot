@@ -7,7 +7,7 @@
 class IdleState: public State {
   public:
     IdleState(Platform * platform);
-    virtual void enterState(int prevState);
+    virtual void enterState(StateId prevState);
 };
 
 #endif

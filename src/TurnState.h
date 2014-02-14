@@ -11,9 +11,12 @@
 #include "State.h"
 
 class TurnState: public State {
+private:
+	unsigned long enterTime;
 public:
 	TurnState(StateId stateId, Platform * platform);
-    virtual void enterState(int prev);
+    virtual void enterState(StateId prevState);
+    virtual StateId handleEvents(QueueList<Event*> * eventQueue);
 };
 
 #endif /* TURNSTATE_H_ */

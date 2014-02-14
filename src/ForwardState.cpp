@@ -7,7 +7,8 @@
 ForwardState::ForwardState(Platform * platform): State(StateForward, platform) {
 }
 
-void ForwardState::enterState(int prev) {
+void ForwardState::enterState(StateId prevState) {
+	State::enterState(prevState);
 	platform->move(Forward);
 }
 
