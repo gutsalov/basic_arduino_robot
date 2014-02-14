@@ -8,6 +8,7 @@
 #include "State.h"
 #include "IdleState.h"
 #include "ForwardState.h"
+#include "TurnState.h"
 #include "SerialControl.h"
 #include "DistanceMeter.h"
 
@@ -43,6 +44,8 @@ void setup() {
 	states = new State * [NumberOfStates];
 	states[StateIdle] = new IdleState(platform);
 	states[StateForward] = new ForwardState(platform);
+	states[StateTurnLeft] = new TurnState(StateTurnLeft, platform);
+	states[StateTurnRight] = new TurnState(StateTurnRight, platform);
 	switchToState(states[StateIdle]);
 }
 

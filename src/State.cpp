@@ -21,6 +21,12 @@ StateId State::handleEvents(QueueList<Event*> * eventQueue) {
 			case EVENT_FORWARD:
 				state = StateForward;
 				break;
+			case EVENT_LEFT:
+				state = StateTurnLeft;
+				break;
+			case EVENT_RIGHT:
+				state = StateTurnRight;
+				break;
 			default:;
 		};
 	}

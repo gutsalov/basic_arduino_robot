@@ -9,6 +9,8 @@
 enum StateId {
   StateIdle,
   StateForward,
+  StateTurnLeft,
+  StateTurnRight,
   NumberOfStates
 };
 
