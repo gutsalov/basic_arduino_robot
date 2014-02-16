@@ -5,11 +5,11 @@
 
 #include "Event.h"
 
-#define EVENT_STOP     0x30
-#define EVENT_FORWARD  0x38
-#define EVENT_BACKWARD 0x32
-#define EVENT_LEFT     0x34
-#define EVENT_RIGHT    0x36
+#define EVENT_STOP     'E'
+#define EVENT_FORWARD  'A'
+#define EVENT_BACKWARD 'B'
+#define EVENT_LEFT     'C'
+#define EVENT_RIGHT    'D'
 
 enum EventType {
 	ControlEvent,

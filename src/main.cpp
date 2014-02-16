@@ -14,16 +14,16 @@
 #include "Timer.h"
 
 #define MOTOR_ID_LEFT  1
-#define MOTOR_ID_RIGHT 4
+#define MOTOR_ID_RIGHT 2
 
-#define SONAR_PIN_TRIGGER A0
-#define SONAR_PIN_ECHO A1
+#define SONAR_PIN_TRIGGER A1
+#define SONAR_PIN_ECHO A0
 
 #define NUMBER_OF_INPUT_DEVICES 3
 
 #define TIMER_PERIOD 100
 
-#define DELAY 1000
+#define DELAY 3000
 
 Platform * platform;
 State ** states;
@@ -51,6 +51,13 @@ void setup() {
 	states[StateTurnLeft] = new TurnState(StateTurnLeft, platform);
 	states[StateTurnRight] = new TurnState(StateTurnRight, platform);
 	switchToState(states[StateIdle]);
+
+	pinMode(A3, OUTPUT);
+	digitalWrite(A3, HIGH);
+	pinMode(A4, OUTPUT);
+	digitalWrite(A4, HIGH);
+	pinMode(A5, OUTPUT);
+	digitalWrite(A5, HIGH);
 }
 
 void loop() {
@@ -68,4 +75,5 @@ void loop() {
 		}
 	}
 }
+
 

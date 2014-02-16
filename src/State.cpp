@@ -19,8 +19,8 @@ StateId State::handleEvents(QueueList<Event*> * eventQueue) {
 	if (eventQueue->isEmpty()) {
 		return getId();
 	}
-	Event * event = eventQueue->pop();
 	StateId state = getId();
+	Event * event = eventQueue->pop();
 	if (event->getType() == ControlEvent) {
 		switch (event->getData()) {
 			case EVENT_STOP:

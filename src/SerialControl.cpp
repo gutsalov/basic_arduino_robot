@@ -14,7 +14,10 @@ SerialControl::SerialControl() {
 
 Event * SerialControl::checkEvent() {
 	if (Serial.available()) {
-		Event * event = new Event(ControlEvent, Serial.read());
+		int symbol = Serial.read();
+		Serial.print("Control = ");
+		Serial.println(symbol, HEX);
+		Event * event = new Event(ControlEvent, symbol);
 		return event;
 	}
 	else {

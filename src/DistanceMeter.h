@@ -20,7 +20,7 @@ public:
 	virtual Event * checkEvent();
 private:
 	NewPing * sonar;
-	bool pingInProgress;
+	uint8_t lastSample;
 	uint8_t samples[NUMBER_OF_SAMPLES];
 	int currentSampleIndex;
 	uint8_t average(uint8_t current);
