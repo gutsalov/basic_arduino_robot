@@ -7,13 +7,13 @@
 
 #include "TurnState.h"
 
-#define AUTO_EXIT_TIMEOUT 300
+#define AUTO_EXIT_TIMEOUT 100
 
 TurnState::TurnState(StateId stateId, Platform * platform): State(stateId, platform) {}
 
 void TurnState::enterState(StateId prevState) {
 	State::enterState(prevState);
-	platform->move(getId() == StateTurnLeft ? Left : Right);
+//	platform->move(getId() == StateTurnLeft ? Left : Right);
 	enterTime = millis();
 }
 

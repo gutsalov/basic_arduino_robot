@@ -9,7 +9,7 @@ ForwardState::ForwardState(Platform * platform): State(StateForward, platform) {
 
 void ForwardState::enterState(StateId prevState) {
 	State::enterState(prevState);
-	platform->move(Forward);
+//	platform->move(Forward);
 }
 
 StateId ForwardState::handleEvents(QueueList<Event*> * eventQueue) {

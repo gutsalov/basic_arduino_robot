@@ -12,13 +12,23 @@
 #define EVENT_RIGHT    'D'
 
 enum EventType {
+	NoEvent,
 	ControlEvent,
 	DistanceEvent,
-	TimerEvent
+	TimerEvent,
+	ChassisForwardEvent,
+	ChassisBackwardEvent,
+	ChassisLeftEvent,
+	ChassisRightEvent,
+	ChassisStopEvent,
+	SpeedLeftEvent,
+	SpeedRightEvent
 };
 
 class Event {
 public:
+	static Event NO_EVENT;
+
 	Event(EventType eventType, int eventData);
 	EventType getType();
 	int getData();

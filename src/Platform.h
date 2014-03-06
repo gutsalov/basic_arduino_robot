@@ -4,20 +4,21 @@
 #include <Arduino.h>
 #include <AFMotor.h>
 
-enum Direction {
-  Forward,
-  Backward,
-  Left,
-  Right
-};
+#include "Event.h"
+#include "Task.h"
 
-class Platform {
+class Platform: public Task {
   private:
-    AF_DCMotor ** motors;
+    AF_DCMotor leftMotor;
+    AF_DCMotor rightMotor;
+    uint8_t leftMotorSpeed;
+    uint8_t rightMotorSpeed;
+    int chassisSpeed;
   public:
     Platform(uint8_t leftId, uint8_t rightId);
-    void move(Direction);
-    void stop();
+    Event * handleEvent(Event * event);
+  private:
+    void handleForward(int speed);
 };
 
 #endif
