@@ -1,14 +1,12 @@
 /*
  * SpeedMeter.h
- *
- *  Created on: 05 марта 2014 г.
- *      Author: user
  */
 
 #ifndef SPEEDMETER_H_
 #define SPEEDMETER_H_
 
 #include <Arduino.h>
+#include <PinChangeInt.h>
 #include "Task.h"
 #include "Event.h"
 
@@ -20,12 +18,7 @@ class SpeedMeter: public Task {
 	  int count;
 	  long stateTime;
 	public:
-	  SpeedMeter(uint8_t pin, EventType eventType): eventType(eventType), pin(pin) {
-		  pinMode(pin, INPUT);
-		  state = digitalRead(pin);
-		  stateTime = millis();
-		  count = 0;
-	  };
+	  SpeedMeter(uint8_t pin, EventType eventType);
 
 	  Event * handleEvent(Event * event);
 };
