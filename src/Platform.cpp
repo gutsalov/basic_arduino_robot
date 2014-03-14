@@ -1,42 +1,55 @@
 #include "Platform.h"
 
-enum Motors {
-  LeftMotor,
-  RightMotor,
-  NumberOfMotors
-};
+#define MAX_CHASSIS_SPEED 50
+#define MAX_MOTOR_SPEED   255
 
-struct MotorCommand {
-  uint8_t command;
-  uint8_t speed;
-};  
-
-MotorCommand commands[][NumberOfMotors] = {
-  {{FORWARD, 255},  {FORWARD, 255}},  /* Forward */
-  {{BACKWARD, 255}, {BACKWARD, 255}}, /* Backward */
-  {{BACKWARD, 255}, {FORWARD, 255}},  /* Left */
-  {{FORWARD, 255},  {BACKWARD, 255}}, /* Right */
-};
-
-Platform::Platform(uint8_t leftId, uint8_t rightId) {
-  motors = new AF_DCMotor*[NumberOfMotors];
-  motors[LeftMotor] = new AF_DCMotor(leftId);
-  motors[RightMotor] = new AF_DCMotor(rightId);
+Platform::Platform(uint8_t leftId, uint8_t rightId): leftMotor(leftId), rightMotor(rightId) {
 }
 
-void Platform::move(Direction dir) {
-  MotorCommand * cmd;
-  AF_DCMotor ** motor;
-  for (cmd = commands[dir], motor = motors; motor < motors + NumberOfMotors; cmd++, motor++) {
-    (*motor)->setSpeed(cmd->speed);
-    (*motor)->run(cmd->command);
-  }
+Event * Platform::handleEvent(Event * event) {
+    switch (event->getType()) {
+    	case ChassisForwardEvent:
+    		handleForward(event->getData());
+    		break;
+    	case SpeedLeftEvent:
+    		handleSpeed(&leftMotor, event->getData());
+    		break;
+    	case SpeedRightEvent:
+    		handleSpeed(&rightMotor, event->getData());
+    		break;
+
+    	default:
+    		;
+    }
+	return &Event::NO_EVENT;
 }
 
-void Platform::stop(void) {
-  AF_DCMotor ** motor;
-  for (motor = motors; motor < motors + NumberOfMotors; motor++) {
-    (*motor)->setSpeed(0);
-    (*motor)->run(BRAKE);
-  }
+void Platform::handleForward(int speed) {
+	wheelSpeed = speed;
+	leftMotor.forward(wheelSpeed);
+	rightMotor.forward(wheelSpeed);
+}
+
+void Platform::handleSpeed(Motor * motor, int speed) {
+	wheelSpeed = motor->adjustSpeed(speed, wheelSpeed);
+}
+
+void Platform::Motor::forward(uint8_t speed) {
+	motorSpeed = speed * MAX_MOTOR_SPEED / MAX_CHASSIS_SPEED;
+	motorWrapper.setSpeed(motorSpeed);
+	motorWrapper.run(FORWARD);
+}
+
+uint8_t Platform::Motor::adjustSpeed(uint8_t currentSpeed, uint8_t targetSpeed) {
+	if (motorSpeed == MAX_MOTOR_SPEED) {
+		return currentSpeed;
+	}
+	uint16_t newMotorSpeed = targetSpeed * motorSpeed / currentSpeed;
+
+	if (newMotorSpeed > MAX_MOTOR_SPEED) {
+		motorSpeed = MAX_MOTOR_SPEED;
+		targetSpeed = targetSpeed * motorSpeed / newMotorSpeed;
+	}
+	motorWrapper.setSpeed(motorSpeed);
+	return targetSpeed;
 }

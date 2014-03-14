@@ -9,16 +9,25 @@
 
 class Platform: public Task {
   private:
-    AF_DCMotor leftMotor;
-    AF_DCMotor rightMotor;
-    uint8_t leftMotorSpeed;
-    uint8_t rightMotorSpeed;
-    int chassisSpeed;
+	class Motor {
+		public:
+			Motor(uint8_t motorId): motorWrapper(motorId), motorSpeed(0) {};
+			void forward(uint8_t wheelSpeed);
+			uint8_t adjustSpeed(uint8_t currentSpeed, uint8_t targetSpeed);
+		private:
+			AF_DCMotor motorWrapper;
+			uint8_t motorSpeed;
+	};
+    Motor leftMotor;
+    Motor rightMotor;
+    uint8_t wheelSpeed;
   public:
     Platform(uint8_t leftId, uint8_t rightId);
     Event * handleEvent(Event * event);
+    void handleSpeed(Motor * motor, int speed);
   private:
     void handleForward(int speed);
+    void handleSpeed(int speed, AF_DCMotor * );
 };
 
 #endif
