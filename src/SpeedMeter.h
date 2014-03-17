@@ -10,17 +10,20 @@
 #include "Task.h"
 #include "Event.h"
 
-class SpeedMeter: public Task {
+#define NUMBER_OF_SAMPLES	5
+
+class SpeedMeter: public Task, PinChangeHandler {
 	private:
 	  EventType eventType;
-	  uint8_t pin;
-	  int state;
-	  int count;
-	  long stateTime;
+	  volatile long currentChangeTime;
+	  volatile long previousChangeTime;
+	  long lastChangeTimestamp;
+	  uint8_t samples[NUMBER_OF_SAMPLES];
+	  uint8_t currentSampleIndex;
 	public:
 	  SpeedMeter(uint8_t pin, EventType eventType);
-
 	  Event * handleEvent(Event * event);
+	  virtual void pinChanged();
 };
 
 

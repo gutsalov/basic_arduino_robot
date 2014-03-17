@@ -1,6 +1,5 @@
 #include "Platform.h"
 
-#define MAX_CHASSIS_SPEED 50
 #define MAX_MOTOR_SPEED   255
 
 Platform::Platform(uint8_t leftId, uint8_t rightId): leftMotor(leftId), rightMotor(rightId) {

@@ -9,29 +9,42 @@
 #define NUMBER_OF_HOLES_PER_CIRCLE  20
 #define CIRCLE_PATH_LENGTH_CM  		22
 
-SpeedMeter::SpeedMeter(uint8_t pin, EventType eventType): eventType(eventType), pin(pin) {
+#define MAX_SAMPLE_VALUE			255L
+
+SpeedMeter::SpeedMeter(uint8_t pin, EventType eventType): eventType(eventType) {
 	pinMode(pin, INPUT);
-	state = digitalRead(pin);
-	stateTime = millis();
-	count = 0;
+	PCintPort::attachInterrupt(pin, this, RISING);
+	currentChangeTime = 0;
+	previousChangeTime = 0;
+	currentSampleIndex = 0;
+	lastChangeTimestamp = 0;
+	for (uint8_t * sample = samples;
+			sample < samples + NUMBER_OF_SAMPLES;
+			sample++) {
+		*sample = 0;
+	}
+}
+
+void SpeedMeter::pinChanged() {
+	previousChangeTime = currentChangeTime;
+	currentChangeTime = millis();
 }
 
 Event * SpeedMeter::handleEvent(Event * event) {
 	Event * resultEvent = &Event::NO_EVENT;
-	int newState = digitalRead(pin);
-	if (state ^ newState) {
-		state = newState;
-		if (state) {
-			count++;
-			if (NUMBER_OF_HOLES_PER_CIRCLE == count) {
-				long newEventTime = millis();
-				long oneCircleTime = newEventTime - stateTime;
-				int speed = CIRCLE_PATH_LENGTH_CM * 1000 / oneCircleTime;
-				resultEvent = new Event(eventType, speed);
-				stateTime = newEventTime;
-				count = 0;
-			}
-		}
+	/* Disable interrupts and check the last pin change */
+	long currentSample = 0;
+	cli();
+	if (lastChangeTimestamp != currentChangeTime) {
+		lastChangeTimestamp = currentChangeTime;
+		currentSample = currentChangeTime - previousChangeTime;
 	}
+	sei();
+	if (currentSample != 0 && currentSample <= MAX_SAMPLE_VALUE) {
+		/* TODO: update sample and generate event if needed */
+
+		currentSampleIndex = (currentSampleIndex + 1) % NUMBER_OF_SAMPLES;
+	}
+
 	return resultEvent;
 }

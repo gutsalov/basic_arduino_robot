@@ -30,57 +30,29 @@
 
 #define DELAY 3000
 
-Platform * platform;
-State ** states;
-State * currentState;
-InputDevice ** inputDevices;
 QueueList<Event *> eventQueue;
-Task ** tasks;
-
-void switchToState(State * newState) {
-	newState->enterState(currentState->getId());
-	currentState = newState;
-}
+Task ** allTasks;
+uint8_t numberOfTasks;
 
 void setup() {
-	/* platform */
-	platform = new Platform(MOTOR_ID_LEFT, MOTOR_ID_RIGHT);
-	/* devices */
-//	inputDevices = new InputDevice * [NUMBER_OF_INPUT_DEVICES];
-//	inputDevices[0] = new SerialControl();
-//	inputDevices[1] = new DistanceMeter(SONAR_PIN_TRIGGER, SONAR_PIN_ECHO);
-//	inputDevices[2] = new Timer(TIMER_PERIOD);
-	/* states */
-	states = new State * [NumberOfStates];
-	states[StateIdle] = new IdleState(platform);
-	states[StateForward] = new ForwardState(platform);
-	states[StateTurnLeft] = new TurnState(StateTurnLeft, platform);
-	states[StateTurnRight] = new TurnState(StateTurnRight, platform);
-	switchToState(states[StateForward]);
-
-	tasks = new Task * [3];
-	tasks[0] = new SpeedMeter(SPEED_METER_LEFT, SpeedLeftEvent);
-	tasks[1] = new SpeedMeter(SPEED_METER_RIGHT, SpeedRightEvent);
-	tasks[2] = new PrintTask();
+	Task * tasks[]= {
+			new Platform(MOTOR_ID_LEFT, MOTOR_ID_RIGHT),
+			new SpeedMeter(SPEED_METER_LEFT, SpeedLeftEvent),
+			new SpeedMeter(SPEED_METER_RIGHT, SpeedRightEvent),
+			new PrintTask()
+		};
+	uint8_t numberOfTasks = sizeof(allTasks) / sizeof(Task *);
+	allTasks = new Task * [numberOfTasks];
+	for (Task ** source = tasks, **target = allTasks; source < tasks + numberOfTasks; source++, target++) {
+		*target = *source;
+	}
+	Event * event = new Event(ChassisForwardEvent, MAX_CHASSIS_SPEED);
+	eventQueue.push(event);
 }
 
 void loop() {
 	Event * event = eventQueue.isEmpty() ? &Event::NO_EVENT : eventQueue.pop();
-	/*
-	for (InputDevice ** device = inputDevices; device < inputDevices + NUMBER_OF_INPUT_DEVICES; device++) {
-		event = (*device)->checkEvent();
-		if (event != NULL) {
-			eventQueue.push(event);
-		}
-	}
-	if (!eventQueue.isEmpty()) {
-		StateId newStateId = currentState->handleEvents(&eventQueue);
-		if (newStateId != currentState->getId()) {
-			switchToState(states[newStateId]);
-		}
-	}
-	*/
-	for (Task ** task = tasks; task < tasks + 3; task++) {
+	for (Task ** task = allTasks; task < allTasks + 3; task++) {
 		Event * newEvent = (*task)->handleEvent(event);
 		if (newEvent != &Event::NO_EVENT) {
 			eventQueue.push(newEvent);
