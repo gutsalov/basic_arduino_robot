@@ -8,7 +8,7 @@
 
 #define NUMBER_OF_HOLES_PER_CIRCLE  20
 #define CIRCLE_PATH_LENGTH_CM  		22
-
+#define MAX_AVERAGE_INTERVAL		1000
 #define MAX_SAMPLE_VALUE			255L
 
 SpeedMeter::SpeedMeter(uint8_t pin, EventType eventType): eventType(eventType) {
@@ -18,10 +18,11 @@ SpeedMeter::SpeedMeter(uint8_t pin, EventType eventType): eventType(eventType) {
 	previousChangeTime = 0;
 	currentSampleIndex = 0;
 	lastChangeTimestamp = 0;
-	for (uint8_t * sample = samples;
+	for (Sample * sample = samples;
 			sample < samples + NUMBER_OF_SAMPLES;
 			sample++) {
-		*sample = 0;
+		sample->value = 0;
+		sample->timestamp = 0;
 	}
 }
 
@@ -41,8 +42,20 @@ Event * SpeedMeter::handleEvent(Event * event) {
 	}
 	sei();
 	if (currentSample != 0 && currentSample <= MAX_SAMPLE_VALUE) {
-		/* TODO: update sample and generate event if needed */
+		samples[currentSampleIndex].value = (uint8_t)currentSample;
+		samples[currentSampleIndex].timestamp = lastChangeTimestamp;
 
+		uint8_t sampleCount = 0;
+		uint16_t sampleSum = 0;
+		for (uint8_t sampleIndex = currentSampleIndex;
+				sampleIndex != currentSampleIndex;
+				sampleIndex = (sampleIndex + 1) % NUMBER_OF_SAMPLES) {
+			if (lastChangeTimestamp - samples[sampleIndex].timestamp > MAX_AVERAGE_INTERVAL) {
+				sampleSum += samples[sampleIndex].value;
+				sampleCount++;
+			}
+		}
+		resultEvent = new Event(eventType, (uint8_t)(sampleSum / sampleCount));
 		currentSampleIndex = (currentSampleIndex + 1) % NUMBER_OF_SAMPLES;
 	}
 

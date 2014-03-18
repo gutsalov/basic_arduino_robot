@@ -29,12 +29,12 @@ class Event {
 public:
 	static Event NO_EVENT;
 
-	Event(EventType eventType, int eventData);
+	Event(EventType eventType, uint8_t eventData);
 	EventType getType();
-	int getData();
+	uint8_t getData();
 private:
 	EventType type;
-	int data;
+	uint8_t data;
 };
 
 #endif //_Event_h_

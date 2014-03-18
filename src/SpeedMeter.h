@@ -12,13 +12,18 @@
 
 #define NUMBER_OF_SAMPLES	5
 
+struct Sample {
+	uint8_t value;
+	long    timestamp;
+};
+
 class SpeedMeter: public Task, PinChangeHandler {
 	private:
 	  EventType eventType;
 	  volatile long currentChangeTime;
 	  volatile long previousChangeTime;
 	  long lastChangeTimestamp;
-	  uint8_t samples[NUMBER_OF_SAMPLES];
+	  Sample samples[NUMBER_OF_SAMPLES];
 	  uint8_t currentSampleIndex;
 	public:
 	  SpeedMeter(uint8_t pin, EventType eventType);
