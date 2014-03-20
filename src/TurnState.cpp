@@ -9,29 +9,30 @@
 
 #define AUTO_EXIT_TIMEOUT 100
 
-TurnState::TurnState(StateId stateId, Platform * platform): State(stateId, platform) {}
+TurnState::TurnState(uint8_t stateId): State(stateId) {}
 
-void TurnState::enterState(StateId prevState) {
+Event * TurnState::enterState(uint8_t prevState) {
 	State::enterState(prevState);
 //	platform->move(getId() == StateTurnLeft ? Left : Right);
 	enterTime = millis();
+	return &Event::NO_EVENT;
 }
 
-StateId TurnState::handleEvents(QueueList<Event *> * eventQueue) {
-	StateId newState = getId();
-	if (newState == getId() && !eventQueue->isEmpty()) {
-		Event * event = eventQueue->peek();
-		if (event->getType() == TimerEvent) {
-			Event * event = eventQueue->pop();
-			if (millis() >= enterTime + AUTO_EXIT_TIMEOUT) {
-				newState = getPrevStateId();
-			}
-			delete event;
-		}
-		else {
-			State::handleEvents(eventQueue);
-		}
-	}
+uint8_t TurnState::handleEvents(Event * event) {
+	uint8_t newState = getId();
+//	if (newState == getId() && !eventQueue->isEmpty()) {
+//		Event * event = eventQueue->peek();
+//		if (event->getType() == TimerEvent) {
+//			Event * event = eventQueue->pop();
+//			if (millis() >= enterTime + AUTO_EXIT_TIMEOUT) {
+//				newState = getPrevStateId();
+//			}
+//			delete event;
+//		}
+//		else {
+//			State::handleEvents(eventQueue);
+//		}
+//	}
 	return newState;
 }
 

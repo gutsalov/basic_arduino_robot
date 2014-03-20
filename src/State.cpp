@@ -1,43 +1,21 @@
 #include "State.h"
 
-State::State(StateId stateId, Platform * platf): id(stateId), platform(platf) {
-	previous = Invalid;
+State::State(uint8_t stateId): id(stateId) {
+	previous = INVALID_STATE_ID;
 }
 
-StateId State::getId(void) {
+uint8_t State::getId(void) {
   return id;
 }
-StateId State::getPrevStateId(void) {
+uint8_t State::getPrevStateId(void) {
 	return previous;
 }
 
-void State::enterState(StateId prev) {
+Event * State::enterState(uint8_t prev) {
 	previous = prev;
+	return &Event::NO_EVENT;
 }
 
-StateId State::handleEvents(QueueList<Event*> * eventQueue) {
-	if (eventQueue->isEmpty()) {
-		return getId();
-	}
-	StateId state = getId();
-	Event * event = eventQueue->pop();
-	if (event->getType() == ControlEvent) {
-		switch (event->getData()) {
-			case EVENT_STOP:
-				state = StateIdle;
-				break;
-			case EVENT_FORWARD:
-				state = StateForward;
-				break;
-			case EVENT_LEFT:
-				state = StateTurnLeft;
-				break;
-			case EVENT_RIGHT:
-				state = StateTurnRight;
-				break;
-			default:;
-		};
-	}
-	delete event;
-	return state;
+uint8_t State::handleEvent(Event* event) {
+	return getId();
 }

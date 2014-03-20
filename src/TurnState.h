@@ -14,9 +14,9 @@ class TurnState: public State {
 private:
 	unsigned long enterTime;
 public:
-	TurnState(StateId stateId, Platform * platform);
-    virtual void enterState(StateId prevState);
-    virtual StateId handleEvents(QueueList<Event*> * eventQueue);
+	TurnState(uint8_t stateId);
+    virtual Event * enterState(uint8_t prevState);
+    virtual uint8_t handleEvents(Event* event);
 };
 
 #endif /* TURNSTATE_H_ */

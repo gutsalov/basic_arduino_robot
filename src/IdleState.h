@@ -6,8 +6,8 @@
 
 class IdleState: public State {
   public:
-    IdleState(Platform * platform);
-    virtual void enterState(StateId prevState);
+    IdleState(uint8_t id);
+    virtual Event * enterState(uint8_t prevState);
 };
 
 #endif

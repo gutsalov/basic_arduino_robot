@@ -6,9 +6,9 @@
 
 class ForwardState: public State {
   public:
-    ForwardState(Platform * platform);
-    virtual void enterState(StateId prevState);
-    virtual StateId handleEvents(QueueList<Event*> * eventQueue);
+    ForwardState(uint8_t id);
+    virtual Event * enterState(uint8_t prevState);
+    virtual uint8_t handleEvent(Event * event);
 };
 
 #endif

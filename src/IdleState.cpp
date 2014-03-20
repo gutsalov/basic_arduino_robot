@@ -1,10 +1,11 @@
 #include "IdleState.h"
 #include "Event.h"
 
-IdleState::IdleState(Platform * platform): State(StateIdle, platform) {
+IdleState::IdleState(uint8_t id): State(id) {
 }
 
-void IdleState::enterState(StateId prevState) {
+Event * IdleState::enterState(uint8_t prevState) {
 	State::enterState(prevState);
 //	platform->stop();
+	return &Event::NO_EVENT;
 }

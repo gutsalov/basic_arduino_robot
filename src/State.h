@@ -6,28 +6,19 @@
 #include "Platform.h"
 #include "Event.h"
 
-enum StateId {
-  StateIdle,
-  StateForward,
-  StateTurnLeft,
-  StateTurnRight,
-  NumberOfStates,
-  Invalid
-};
-
+#define INVALID_STATE_ID	255
 
 class State {
   private:
-    StateId id;
-    StateId previous;
+    uint8_t id;
+    uint8_t previous;
   protected:
-    Platform * platform;
-    StateId getPrevStateId(void);
+    uint8_t getPrevStateId(void);
   public:
-    State(StateId stateId, Platform * platform);
-    StateId getId(void);
-    virtual void enterState(StateId prev);
-    virtual StateId handleEvents(QueueList<Event*> * eventQueue);
+    State(uint8_t stateId);
+    uint8_t getId(void);
+    virtual Event * enterState(uint8_t prev);
+    virtual uint8_t handleEvent(Event* event);
 };
 
 #endif
