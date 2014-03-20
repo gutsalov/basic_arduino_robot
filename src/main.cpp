@@ -35,24 +35,26 @@ Task ** allTasks;
 uint8_t numberOfTasks;
 
 void setup() {
+	Serial.begin(9600);
+
 	Task * tasks[]= {
 			new Platform(MOTOR_ID_LEFT, MOTOR_ID_RIGHT),
 			new SpeedMeter(SPEED_METER_LEFT, SpeedLeftEvent),
 			new SpeedMeter(SPEED_METER_RIGHT, SpeedRightEvent),
 			new PrintTask()
 		};
-	uint8_t numberOfTasks = sizeof(allTasks) / sizeof(Task *);
+	numberOfTasks = sizeof(tasks) / sizeof(Task *);
 	allTasks = new Task * [numberOfTasks];
 	for (Task ** source = tasks, **target = allTasks; source < tasks + numberOfTasks; source++, target++) {
 		*target = *source;
 	}
-	Event * event = new Event(ChassisForwardEvent, MAX_CHASSIS_SPEED);
+	Event * event = new Event(ChassisForwardEvent, 15);
 	eventQueue.push(event);
 }
 
 void loop() {
 	Event * event = eventQueue.isEmpty() ? &Event::NO_EVENT : eventQueue.pop();
-	for (Task ** task = allTasks; task < allTasks + 3; task++) {
+	for (Task ** task = allTasks; task < (allTasks + numberOfTasks); task++) {
 		Event * newEvent = (*task)->handleEvent(event);
 		if (newEvent != &Event::NO_EVENT) {
 			eventQueue.push(newEvent);

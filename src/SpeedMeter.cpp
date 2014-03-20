@@ -47,9 +47,9 @@ Event * SpeedMeter::handleEvent(Event * event) {
 
 		uint8_t sampleCount = 0;
 		uint16_t sampleSum = 0;
-		for (uint8_t sampleIndex = currentSampleIndex;
-				sampleIndex != currentSampleIndex;
-				sampleIndex = (sampleIndex + 1) % NUMBER_OF_SAMPLES) {
+		for (uint8_t sampleIndex = currentSampleIndex, i = 0;
+				i < NUMBER_OF_SAMPLES;
+				sampleIndex = (sampleIndex + 1) % NUMBER_OF_SAMPLES, i++) {
 			if (lastChangeTimestamp - samples[sampleIndex].timestamp < MAX_AVERAGE_INTERVAL) {
 				sampleSum += samples[sampleIndex].value;
 				sampleCount++;

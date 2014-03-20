@@ -9,7 +9,6 @@
 #include "PrintTask.h"
 
 PrintTask::PrintTask() {
-	Serial.begin(9600);
 }
 
 Event * PrintTask::handleEvent(Event * event) {
@@ -17,10 +16,10 @@ Event * PrintTask::handleEvent(Event * event) {
 	EventType type = event->getType();
 	if (type == SpeedLeftEvent ||
 			type == SpeedRightEvent) {
-		Serial.print(type == SpeedLeftEvent ? "Left" : "Right");
-		Serial.print(" weel speed = ");
-		Serial.print(event->getData());
-		Serial.println(" cm/s");
+		if (type == SpeedRightEvent) {
+			Serial.print("               ");
+		}
+		Serial.println(event->getData());
 	}
 	return resultEvent;
 }

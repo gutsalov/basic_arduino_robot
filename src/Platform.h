@@ -7,7 +7,7 @@
 #include "Event.h"
 #include "Task.h"
 
-#define MAX_CHASSIS_SPEED 50
+#define MAX_CHASSIS_SPEED 25
 
 class Platform: public Task {
   private:

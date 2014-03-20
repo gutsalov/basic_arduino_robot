@@ -1,6 +1,8 @@
 #include "Platform.h"
 
-#define MAX_MOTOR_SPEED   255
+#define MAX_MOTOR_SPEED   	255
+#define MIN_MOTOR_SPEED   	120
+#define INITIAL_MOTOR_SPEED	200
 
 Platform::Platform(uint8_t leftId, uint8_t rightId): leftMotor(leftId), rightMotor(rightId) {
 }
@@ -34,20 +36,33 @@ void Platform::handleSpeed(Motor * motor, int speed) {
 }
 
 void Platform::Motor::forward(uint8_t speed) {
-	motorSpeed = speed * MAX_MOTOR_SPEED / MAX_CHASSIS_SPEED;
+//	motorSpeed = INITIAL_MOTOR_SPEED;
+	motorSpeed = MAX_MOTOR_SPEED;
 	motorWrapper.setSpeed(motorSpeed);
 	motorWrapper.run(FORWARD);
 }
 
 uint8_t Platform::Motor::adjustSpeed(uint8_t currentSpeed, uint8_t targetSpeed) {
-	if (motorSpeed == MAX_MOTOR_SPEED) {
-		return currentSpeed;
+	if (currentSpeed == 0) {
+		currentSpeed = 1;
 	}
+
 	uint16_t newMotorSpeed = targetSpeed * motorSpeed / currentSpeed;
 
-	if (newMotorSpeed > MAX_MOTOR_SPEED) {
-		motorSpeed = MAX_MOTOR_SPEED;
-		targetSpeed = targetSpeed * motorSpeed / newMotorSpeed;
+	Serial.print(" - ");
+	Serial.print(currentSpeed);
+	Serial.print(" > ");
+	Serial.print(targetSpeed);
+	Serial.print(" = ");
+	Serial.print(motorSpeed);
+	Serial.print(" > ");
+	Serial.println(newMotorSpeed);
+
+	if (newMotorSpeed < MIN_MOTOR_SPEED ) {
+		motorSpeed = MIN_MOTOR_SPEED;
+	}
+	else {
+		motorSpeed = newMotorSpeed;
 	}
 	motorWrapper.setSpeed(motorSpeed);
 	return targetSpeed;
