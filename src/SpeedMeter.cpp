@@ -41,7 +41,7 @@ Event * SpeedMeter::handleEvent(Event * event) {
 		currentSample = currentChangeTime - previousChangeTime;
 	}
 	sei();
-	if (currentSample != 0 && currentSample <= MAX_SAMPLE_VALUE) {
+	if (currentSample != 0 && currentSample < MAX_SAMPLE_VALUE) {
 		samples[currentSampleIndex].value = (uint8_t)currentSample;
 		samples[currentSampleIndex].timestamp = lastChangeTimestamp;
 
@@ -50,12 +50,13 @@ Event * SpeedMeter::handleEvent(Event * event) {
 		for (uint8_t sampleIndex = currentSampleIndex;
 				sampleIndex != currentSampleIndex;
 				sampleIndex = (sampleIndex + 1) % NUMBER_OF_SAMPLES) {
-			if (lastChangeTimestamp - samples[sampleIndex].timestamp > MAX_AVERAGE_INTERVAL) {
+			if (lastChangeTimestamp - samples[sampleIndex].timestamp < MAX_AVERAGE_INTERVAL) {
 				sampleSum += samples[sampleIndex].value;
 				sampleCount++;
 			}
 		}
-		resultEvent = new Event(eventType, (uint8_t)(sampleSum / sampleCount));
+		uint32_t speed = (1000 * CIRCLE_PATH_LENGTH_CM * sampleCount) / (NUMBER_OF_HOLES_PER_CIRCLE * sampleSum);
+		resultEvent = new Event(eventType, (uint8_t)speed);
 		currentSampleIndex = (currentSampleIndex + 1) % NUMBER_OF_SAMPLES;
 	}
 
