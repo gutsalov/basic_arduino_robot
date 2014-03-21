@@ -6,24 +6,15 @@
 
 #include <Arduino.h>
 
-#define NUMBER_OF_HOLES_PER_CIRCLE  20
-#define CIRCLE_PATH_LENGTH_CM  		22
-#define MAX_AVERAGE_INTERVAL		1000
-#define MAX_SAMPLE_VALUE			255L
+#define SPEED_FACTOR				(double)1100
+#define MAX_SAMPLE_VALUE			100
 
 SpeedMeter::SpeedMeter(uint8_t pin, EventType eventType): eventType(eventType) {
 	pinMode(pin, INPUT);
 	PCintPort::attachInterrupt(pin, this, RISING);
 	currentChangeTime = 0;
 	previousChangeTime = 0;
-	currentSampleIndex = 0;
 	lastChangeTimestamp = 0;
-	for (Sample * sample = samples;
-			sample < samples + NUMBER_OF_SAMPLES;
-			sample++) {
-		sample->value = 0;
-		sample->timestamp = 0;
-	}
 }
 
 void SpeedMeter::pinChanged() {
@@ -34,7 +25,7 @@ void SpeedMeter::pinChanged() {
 Event * SpeedMeter::handleEvent(Event * event) {
 	Event * resultEvent = &Event::NO_EVENT;
 	/* Disable interrupts and check the last pin change */
-	long currentSample = 0;
+	double currentSample = 0;
 	cli();
 	if (lastChangeTimestamp != currentChangeTime) {
 		lastChangeTimestamp = currentChangeTime;
@@ -42,22 +33,8 @@ Event * SpeedMeter::handleEvent(Event * event) {
 	}
 	sei();
 	if (currentSample != 0 && currentSample < MAX_SAMPLE_VALUE) {
-		samples[currentSampleIndex].value = (uint8_t)currentSample;
-		samples[currentSampleIndex].timestamp = lastChangeTimestamp;
-
-		uint8_t sampleCount = 0;
-		uint16_t sampleSum = 0;
-		for (uint8_t sampleIndex = currentSampleIndex, i = 0;
-				i < NUMBER_OF_SAMPLES;
-				sampleIndex = (sampleIndex + 1) % NUMBER_OF_SAMPLES, i++) {
-			if (lastChangeTimestamp - samples[sampleIndex].timestamp < MAX_AVERAGE_INTERVAL) {
-				sampleSum += samples[sampleIndex].value;
-				sampleCount++;
-			}
-		}
-		uint32_t speed = (1000 * CIRCLE_PATH_LENGTH_CM * sampleCount) / (NUMBER_OF_HOLES_PER_CIRCLE * sampleSum);
-		resultEvent = new Event(eventType, (uint8_t)speed);
-		currentSampleIndex = (currentSampleIndex + 1) % NUMBER_OF_SAMPLES;
+		double speed = SPEED_FACTOR / currentSample;
+		resultEvent = new Event(eventType, speed);
 	}
 
 	return resultEvent;

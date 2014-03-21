@@ -31,10 +31,10 @@ public:
 
 	Event(EventType eventType, uint8_t eventData);
 	EventType getType();
-	uint8_t getData();
+	double getData();
 private:
 	EventType type;
-	uint8_t data;
+	double data;
 };
 
 #endif //_Event_h_

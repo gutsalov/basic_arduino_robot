@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <AFMotor.h>
+#include <PID_v1.h>
 
 #include "Event.h"
 #include "Task.h"
@@ -13,23 +14,27 @@ class Platform: public Task {
   private:
 	class Motor {
 		public:
-			Motor(uint8_t motorId): motorWrapper(motorId), motorSpeed(0) {};
-			void forward(uint8_t wheelSpeed);
-			uint8_t adjustSpeed(uint8_t currentSpeed, uint8_t targetSpeed);
+			Motor(uint8_t motorId);
+			void forward(double targetSpeed);
+			void backward(void);
+			void handleCurrentWheelSpeed(double currentSpeed);
+			void adjustMotorSpeedIfNeeded(void);
 		private:
 			AF_DCMotor motorWrapper;
-			uint8_t motorSpeed;
+			PID motorPID;
+			double motorSpeed;
+			double currentWheelSpeed;
+			double targetWheelSpeed;
 	};
     Motor leftMotor;
     Motor rightMotor;
-    uint8_t wheelSpeed;
   public:
     Platform(uint8_t leftId, uint8_t rightId);
     Event * handleEvent(Event * event);
-    void handleSpeed(Motor * motor, int speed);
   private:
-    void handleForward(int speed);
-    void handleSpeed(int speed, AF_DCMotor * );
+    void handleForward(double speed);
+    void handleSpeed(Motor * motor, double currentSpeed);
+    void adjustMotorSpeedIfNeeded(void);
 };
 
 #endif

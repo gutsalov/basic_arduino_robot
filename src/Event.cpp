@@ -14,7 +14,7 @@ EventType Event::getType() {
 	return type;
 }
 
-uint8_t Event::getData() {
+double Event::getData() {
 	return data;
 }
 

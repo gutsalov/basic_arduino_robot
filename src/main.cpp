@@ -26,8 +26,6 @@
 
 #define NUMBER_OF_INPUT_DEVICES 3
 
-#define TIMER_PERIOD 100
-
 #define DELAY 3000
 
 QueueList<Event *> eventQueue;
@@ -35,7 +33,7 @@ Task ** allTasks;
 uint8_t numberOfTasks;
 
 void setup() {
-	Serial.begin(9600);
+	Serial.begin(115200);
 
 	Task * tasks[]= {
 			new Platform(MOTOR_ID_LEFT, MOTOR_ID_RIGHT),
