@@ -29,7 +29,7 @@ class Event {
 public:
 	static Event NO_EVENT;
 
-	Event(EventType eventType, uint8_t eventData);
+	Event(EventType eventType, double eventData);
 	EventType getType();
 	double getData();
 private:

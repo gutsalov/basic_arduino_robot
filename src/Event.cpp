@@ -8,7 +8,7 @@
 
 Event Event::NO_EVENT(NoEvent, 0);
 
-Event::Event(EventType eventType, uint8_t eventData): type(eventType), data(eventData){};
+Event::Event(EventType eventType, double eventData): type(eventType), data(eventData){};
 
 EventType Event::getType() {
 	return type;
@@ -17,5 +17,3 @@ EventType Event::getType() {
 double Event::getData() {
 	return data;
 }
-
-

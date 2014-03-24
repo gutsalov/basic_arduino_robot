@@ -41,11 +41,12 @@ void Platform::handleSpeed(Motor * motor, double speed) {
 }
 
 Platform::Motor::Motor(uint8_t id): motorWrapper(id),
-		motorPID(&currentWheelSpeed, &motorSpeed, &targetWheelSpeed, 2, 5, 1, DIRECT) {
+		motorPID(&currentWheelSpeed, &motorSpeed, &targetWheelSpeed, 4, 0.2, 0.1, DIRECT) {
 	motorSpeed = 0;
 	currentWheelSpeed = 0;
 	targetWheelSpeed = 0;
-	motorPID.SetMode(MANUAL);
+	motorPID.SetMode(AUTOMATIC);
+	motorPID.SetSampleTime(100);
 	motorPID.SetOutputLimits(MIN_MOTOR_SPEED, MAX_MOTOR_SPEED);
 }
 
