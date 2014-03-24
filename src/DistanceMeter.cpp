@@ -4,43 +4,74 @@
  *  Created on: Feb 14, 2014
  *      Author: gutsan
  */
+
 #include "DistanceMeter.h"
 
-#define NOT_INITIALIZED 255
+/* Number of measurements per second */
+#define DISTANCE_MEASUREMENT_FREQ	5
+/* Time between two trigger events */
+#define TRIGGER_PERIOD				1000000 / DISTANCE_MEASUREMENT_FREQ
 
-DistanceMeter::DistanceMeter(uint8_t trigger_pin, uint8_t echo_pin) {
-	sonar = new NewPing(trigger_pin, echo_pin, MAX_DISTANCE);
-	lastSample = NOT_INITIALIZED;
-	currentSampleIndex = 0;
-	for (uint8_t * sample = samples; sample < samples + NUMBER_OF_SAMPLES; sample++) {
-		*sample = NOT_INITIALIZED;
+DistanceMeter::DistanceMeter(uint8_t trigger_pin, uint8_t echo_pin)
+{
+	/* Initialize sonar hardware; got from NewPing */
+	triggerBit = digitalPinToBitMask(trigger_pin); // Get the port register bitmask for the trigger pin.
+	echoBit = digitalPinToBitMask(echo_pin);       // Get the port register bitmask for the echo pin.
+
+	triggerOutput = portOutputRegister(digitalPinToPort(trigger_pin)); // Get the output port register for the trigger pin.
+	echoInput = portInputRegister(digitalPinToPort(echo_pin));         // Get the input port register for the echo pin.
+
+	/* Initialize states */
+	numberOfStates = 0;
+	idleState = new IdleState(numberOfStates++, this);
+	waitForEchoState = new WaitForEchoState(numberOfStates++, this);
+	errorState = new ErrorState(numberOfStates++, this);
+	State * allStates[] = {
+			idleState,
+			waitForEchoState,
+			errorState
+	};
+	State ** states = new State*[numberOfStates];
+	for (State **srcState = allStates, **targetState = states;
+			srcState < allStates + numberOfStates;
+			srcState++, targetState++) {
+		*targetState = *srcState;
 	}
+	stateMachine = new StateMachineTask(states, numberOfStates, 0);
+	lastTriggerTime = micros();
 }
 
-Event * DistanceMeter::checkEvent() {
-	Event * distanceEvent = NULL;
-	/* Echo received, calculate distance */
-	uint8_t distance = sonar->ping_cm();
-	if (distance > 0 && (lastSample == NOT_INITIALIZED ||
-			((distance > lastSample ? distance - lastSample : lastSample - distance) > lastSample / 10))) {
-		lastSample = samples[currentSampleIndex] = distance;
-		uint8_t avrg = average(distance);
-		if ((distance - avrg) < (avrg / 2)) {
-			distanceEvent = new Event(DistanceEvent, distance);
-		}
-		currentSampleIndex = (currentSampleIndex + 1) % NUMBER_OF_SAMPLES;
-	}
-	return distanceEvent;
+DistanceMeter::DistanceMeterState::DistanceMeterState(uint8_t id,
+		DistanceMeter * distanceMeter): State(id), distanceMeter(distanceMeter){}
+
+Event * DistanceMeter::handleEvent(Event * event) {
+	return stateMachine->handleEvent(event);
 }
 
-uint8_t DistanceMeter::average(uint8_t current) {
-	int numberOfSamples = 1;
-	uint16_t sum = current;
-	for (uint8_t * sample = samples; sample < samples + NUMBER_OF_SAMPLES; sample++) {
-		if (*sample != NOT_INITIALIZED) {
-			sum += *sample;
-			numberOfSamples++;
-		}
+Event * DistanceMeter::WaitForEchoState::enterState(uint8_t prev) {
+	return &Event::NO_EVENT;
+}
+
+uint8_t DistanceMeter::WaitForEchoState::handleEvent(Event* event) {
+	return getId();
+}
+
+Event * DistanceMeter::IdleState::enterState(uint8_t prev) {
+	return &Event::NO_EVENT;
+}
+uint8_t DistanceMeter::IdleState::handleEvent(Event* event) {
+	uint8_t newState = getId();
+	if (micros() - distanceMeter->lastTriggerTime > TRIGGER_PERIOD) {
+		newState = distanceMeter->waitForEchoState->getId();
 	}
-	return sum / numberOfSamples;
+	return newState;
+}
+
+Event * DistanceMeter::ErrorState::enterState(uint8_t prev) {
+	return &Event::NO_EVENT;
+}
+
+uint8_t DistanceMeter::ErrorState::handleEvent(Event* event) {
+	return getId();
+
 }

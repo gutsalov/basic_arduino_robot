@@ -9,6 +9,7 @@
 
 #include "StateMachineTask.h"
 
+StateMachineTask::StateMachineTask() {}
 
 StateMachineTask::StateMachineTask(State ** states, uint8_t numberOfStates,
 		uint8_t initialState): states(states), currentState(initialState) {

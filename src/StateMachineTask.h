@@ -15,6 +15,7 @@ private:
 	State ** states;
 	uint8_t currentState;
 public:
+	StateMachineTask();
 	StateMachineTask(State ** states, uint8_t numberOfStates, uint8_t initialState);
 	virtual Event * handleEvent(Event * event);
 };
