@@ -8,9 +8,10 @@
 #ifndef DISTANCEMETER_H_
 #define DISTANCEMETER_H_
 
+#include <PinChangeInt.h>
 #include "StateMachineTask.h"
 
-class DistanceMeter: public Task {
+class DistanceMeter: public Task, PinChangeHandler {
 private:
 	class DistanceMeterState: public State {
 	protected:
@@ -32,16 +33,8 @@ private:
 	    virtual Event * enterState(uint8_t prev);
 	    virtual uint8_t handleEvent(Event* event);
 	};
-	class ErrorState: public DistanceMeterState {
-	public:
-		ErrorState(uint8_t id, DistanceMeter * distanceMeter):
-			DistanceMeterState(id, distanceMeter){};
-	    virtual Event * enterState(uint8_t prev);
-	    virtual uint8_t handleEvent(Event* event);
-	};
 	WaitForEchoState * waitForEchoState;
 	IdleState * idleState;
-	ErrorState * errorState;
 	uint8_t numberOfStates;
 	StateMachineTask * stateMachine;
 	uint8_t triggerBit;
@@ -49,9 +42,14 @@ private:
 	volatile uint8_t *triggerOutput;
 	volatile uint8_t *echoInput;
 	unsigned long lastTriggerTime;
+	unsigned long lastRoundtripTime;
+	volatile unsigned long lastEchoTime;
+protected:
+	bool timeoutExpired();
 public:
 	DistanceMeter(uint8_t trigger_pin, uint8_t echo_pin);
 	virtual Event * handleEvent(Event * event);
+    virtual void pinChanged();
 };
 
 #endif /* DISTANCEMETER_H_ */

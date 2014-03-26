@@ -11,8 +11,11 @@
 #define EVENT_LEFT     'C'
 #define EVENT_RIGHT    'D'
 
+#define ERROR_CODE_DISTANCE_METER	1
+
 enum EventType {
 	NoEvent,
+	ErrorEvent,
 	ControlEvent,
 	DistanceEvent,
 	TimerEvent,

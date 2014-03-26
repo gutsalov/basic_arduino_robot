@@ -21,6 +21,14 @@ Event * PrintTask::handleEvent(Event * event) {
 		}
 		Serial.println(event->getData());
 	}
+	else if (type == DistanceEvent) {
+		Serial.print("Distance=");
+		Serial.println(event->getData());
+	}
+	else if (type == ErrorEvent) {
+		Serial.print("Error=");
+		Serial.println(event->getData());
+	}
 	return resultEvent;
 }
 

@@ -36,9 +36,9 @@ void setup() {
 	Serial.begin(115200);
 
 	Task * tasks[]= {
-			new Platform(MOTOR_ID_LEFT, MOTOR_ID_RIGHT),
-			new SpeedMeter(SPEED_METER_LEFT, SpeedLeftEvent),
-			new SpeedMeter(SPEED_METER_RIGHT, SpeedRightEvent),
+//			new Platform(MOTOR_ID_LEFT, MOTOR_ID_RIGHT),
+//			new SpeedMeter(SPEED_METER_LEFT, SpeedLeftEvent),
+//			new SpeedMeter(SPEED_METER_RIGHT, SpeedRightEvent),
 			new DistanceMeter(SONAR_PIN_TRIGGER, SONAR_PIN_ECHO),
 			new PrintTask()
 		};
