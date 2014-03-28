@@ -9,6 +9,7 @@
 #define DISTANCEMETER_H_
 
 #include <PinChangeInt.h>
+#include <NewPing.h>
 #include "StateMachineTask.h"
 
 class DistanceMeter: public Task, PinChangeHandler {
@@ -37,10 +38,7 @@ private:
 	IdleState * idleState;
 	uint8_t numberOfStates;
 	StateMachineTask * stateMachine;
-	uint8_t triggerBit;
-	uint8_t echoBit;
-	volatile uint8_t *triggerOutput;
-	volatile uint8_t *echoInput;
+	NewPing newPing;
 	unsigned long lastTriggerTime;
 	unsigned long lastRoundtripTime;
 	volatile unsigned long lastEchoTime;

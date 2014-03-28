@@ -13,20 +13,12 @@
 #define TRIGGER_PERIOD				1000000 / DISTANCE_MEASUREMENT_FREQ
 #define MAX_SENSOR_DELAY 18000  // Maximum uS it takes for sensor to start the ping (SRF06 is the highest measured, just under 18ms).
 #define NO_ECHO				0
-#define US_ROUNDTRIP_CM		(double)58.31
+#define PING_OVERHEAD		(double)580.31
 
-DistanceMeter::DistanceMeter(uint8_t trigger_pin, uint8_t echo_pin)
+DistanceMeter::DistanceMeter(uint8_t trigger_pin, uint8_t echo_pin): newPing(trigger_pin, echo_pin)
 {
-	/* Initialize sonar hardware; got from NewPing */
-	triggerBit = digitalPinToBitMask(trigger_pin); // Get the port register bitmask for the trigger pin.
-	echoBit = digitalPinToBitMask(echo_pin);       // Get the port register bitmask for the echo pin.
-
-	triggerOutput = portOutputRegister(digitalPinToPort(trigger_pin)); // Get the output port register for the trigger pin.
-	echoInput = portInputRegister(digitalPinToPort(echo_pin));         // Get the input port register for the echo pin.
-
 	/* Initialize interrupts */
-	pinMode(echo_pin, INPUT);
-	PCintPort::attachInterrupt(echo_pin, this, RISING);
+	PCintPort::attachInterrupt(echo_pin, this, FALLING);
 
 	/* Initialize states */
 	numberOfStates = 0;
@@ -44,6 +36,7 @@ DistanceMeter::DistanceMeter(uint8_t trigger_pin, uint8_t echo_pin)
 	}
 	stateMachine = new StateMachineTask(states, numberOfStates, 0);
 	lastTriggerTime = micros();
+	lastRoundtripTime = 0;
 }
 
 void DistanceMeter::pinChanged(void) {
@@ -62,23 +55,18 @@ Event * DistanceMeter::handleEvent(Event * event) {
 }
 
 Event * DistanceMeter::WaitForEchoState::enterState(uint8_t prev) {
-	Serial.print("WaitForEchoState::enterState: ");
-	Serial.println(distanceMeter->lastTriggerTime);
+	Event * event = &Event::NO_EVENT;
 	distanceMeter->lastEchoTime = NO_ECHO;
 	distanceMeter->lastRoundtripTime = NO_ECHO;
-	/* Code got from NewPing */
-	*(distanceMeter->triggerOutput) &= ~(distanceMeter->triggerBit); // Set the trigger pin low, should already be low, but this will make sure it is.
-	delayMicroseconds(4);            // Wait for pin to go low, testing shows it needs 4uS to work every time.
-	*(distanceMeter->triggerOutput) |= (distanceMeter->triggerBit);  // Set trigger pin high, this tells the sensor to send out a ping.
-	delayMicroseconds(10);           // Wait long enough for the sensor to realize the trigger pin is high. Sensor specs say to wait 10uS.
-	*(distanceMeter->triggerOutput) &= ~(distanceMeter->triggerBit); // Set trigger pin back to low.
 
-	unsigned long max_time =  micros() + MAX_SENSOR_DELAY;                  // Set a timeout for the ping to trigger.
-	while (*(distanceMeter->echoInput) & (distanceMeter->echoBit) && micros() <= max_time) {} // Wait for echo pin to clear.
-	while (!(*(distanceMeter->echoInput) & (distanceMeter->echoBit)))                          // Wait for ping to start.
-		if (micros() > max_time) return new Event(ErrorEvent, ERROR_CODE_DISTANCE_METER);                // Something went wrong, abort.
 	distanceMeter->lastTriggerTime = micros();
-	return &Event::NO_EVENT;
+	if (!distanceMeter->newPing.ping_trigger()) {
+		event = new Event(ErrorEvent, ERROR_CODE_DISTANCE_METER);                // Something went wrong, abort.
+	}
+	cli();
+	distanceMeter->lastEchoTime = NO_ECHO;
+	sei();
+	return event;
 }
 
 uint8_t DistanceMeter::WaitForEchoState::handleEvent(Event* event) {
@@ -89,7 +77,7 @@ uint8_t DistanceMeter::WaitForEchoState::handleEvent(Event* event) {
 	sei();
 	if (lastEchoTime != NO_ECHO || distanceMeter->timeoutExpired()) {
 		if(lastEchoTime != NO_ECHO) {
-			distanceMeter->lastRoundtripTime = lastEchoTime - distanceMeter->lastTriggerTime;
+			distanceMeter->lastRoundtripTime = lastEchoTime - distanceMeter->lastTriggerTime - PING_OVERHEAD;
 		}
 		newStateId = distanceMeter->idleState->getId();
 	}
