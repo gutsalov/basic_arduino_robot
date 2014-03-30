@@ -8,8 +8,8 @@
 #include "Event.h"
 #include "Task.h"
 
-#define MAX_CHASSIS_SPEED 80
-#define MIN_CHASSIS_SPEED 10
+#define MAX_CHASSIS_SPEED 30
+#define MIN_CHASSIS_SPEED 5
 
 class Platform: public Task {
   private:

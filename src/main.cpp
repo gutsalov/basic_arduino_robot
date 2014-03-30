@@ -4,6 +4,7 @@
 #include <cppsupport.h>
 #include <QueueList.h>
 
+#include "config.h"
 #include "Platform.h"
 #include "State.h"
 #include "IdleState.h"
@@ -15,15 +16,6 @@
 #include "SpeedMeter.h"
 #include "PrintTask.h"
 #include "ControlTask.h"
-
-#define MOTOR_ID_LEFT  1
-#define MOTOR_ID_RIGHT 2
-
-#define SPEED_METER_LEFT  A3
-#define SPEED_METER_RIGHT A4
-
-#define SONAR_PIN_TRIGGER A1
-#define SONAR_PIN_ECHO A0
 
 QueueList<Event *> eventQueue;
 Task ** allTasks;
