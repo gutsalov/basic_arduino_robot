@@ -12,6 +12,9 @@ Event * Platform::handleEvent(Event * event) {
     	case ChassisForwardEvent:
     		handleForward(event->getData());
     		break;
+    	case ChassisStopEvent:
+    		handleStop();
+    		break;
     	case SpeedLeftEvent:
     		handleSpeed(&leftMotor, event->getData());
     		break;
@@ -36,6 +39,11 @@ void Platform::handleForward(double speed) {
 	rightMotor.forward(speed);
 }
 
+void Platform::handleStop() {
+	leftMotor.stop();
+	rightMotor.stop();
+}
+
 void Platform::handleSpeed(Motor * motor, double speed) {
 	motor->handleCurrentWheelSpeed(speed);
 }
@@ -50,10 +58,16 @@ Platform::Motor::Motor(uint8_t id): motorWrapper(id),
 	motorPID.SetOutputLimits(MIN_MOTOR_SPEED, MAX_MOTOR_SPEED);
 }
 
-
 void Platform::Motor::forward(double targetSpeed) {
 	targetWheelSpeed = targetSpeed;
 	motorWrapper.run(FORWARD);
+	handleCurrentWheelSpeed(0);
+}
+
+void Platform::Motor::stop() {
+	targetWheelSpeed = 0;
+	motorWrapper.run(BRAKE);
+	motorWrapper.setSpeed(0);
 	handleCurrentWheelSpeed(0);
 }
 

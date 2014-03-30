@@ -8,7 +8,8 @@
 #include "Event.h"
 #include "Task.h"
 
-#define MAX_CHASSIS_SPEED 25
+#define MAX_CHASSIS_SPEED 80
+#define MIN_CHASSIS_SPEED 10
 
 class Platform: public Task {
   private:
@@ -16,6 +17,7 @@ class Platform: public Task {
 		public:
 			Motor(uint8_t motorId);
 			void forward(double targetSpeed);
+			void stop();
 			void backward(void);
 			void handleCurrentWheelSpeed(double currentSpeed);
 			void adjustMotorSpeedIfNeeded(void);
@@ -33,6 +35,7 @@ class Platform: public Task {
     Event * handleEvent(Event * event);
   private:
     void handleForward(double speed);
+    void handleStop();
     void handleSpeed(Motor * motor, double currentSpeed);
     void adjustMotorSpeedIfNeeded(void);
 };

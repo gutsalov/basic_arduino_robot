@@ -14,6 +14,7 @@
 #include "Timer.h"
 #include "SpeedMeter.h"
 #include "PrintTask.h"
+#include "ControlTask.h"
 
 #define MOTOR_ID_LEFT  1
 #define MOTOR_ID_RIGHT 2
@@ -24,10 +25,6 @@
 #define SONAR_PIN_TRIGGER A1
 #define SONAR_PIN_ECHO A0
 
-#define NUMBER_OF_INPUT_DEVICES 3
-
-#define DELAY 3000
-
 QueueList<Event *> eventQueue;
 Task ** allTasks;
 uint8_t numberOfTasks;
@@ -36,10 +33,11 @@ void setup() {
 	Serial.begin(115200);
 
 	Task * tasks[]= {
-//			new Platform(MOTOR_ID_LEFT, MOTOR_ID_RIGHT),
-//			new SpeedMeter(SPEED_METER_LEFT, SpeedLeftEvent),
-//			new SpeedMeter(SPEED_METER_RIGHT, SpeedRightEvent),
+			new Platform(MOTOR_ID_LEFT, MOTOR_ID_RIGHT),
+			new SpeedMeter(SPEED_METER_LEFT, SpeedLeftEvent),
+			new SpeedMeter(SPEED_METER_RIGHT, SpeedRightEvent),
 			new DistanceMeter(SONAR_PIN_TRIGGER, SONAR_PIN_ECHO),
+			new ControlTask(),
 			new PrintTask()
 		};
 	numberOfTasks = sizeof(tasks) / sizeof(Task *);
@@ -47,7 +45,7 @@ void setup() {
 	for (Task ** source = tasks, **target = allTasks; source < tasks + numberOfTasks; source++, target++) {
 		*target = *source;
 	}
-	Event * event = new Event(ChassisForwardEvent, 15);
+	Event * event = new Event(ChassisForwardEvent, MAX_CHASSIS_SPEED);
 	eventQueue.push(event);
 }
 

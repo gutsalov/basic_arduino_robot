@@ -14,16 +14,23 @@ PrintTask::PrintTask() {
 Event * PrintTask::handleEvent(Event * event) {
 	Event * resultEvent = &Event::NO_EVENT;
 	EventType type = event->getType();
-	if (type == SpeedLeftEvent ||
+	/*if (type == SpeedLeftEvent ||
 			type == SpeedRightEvent) {
 		if (type == SpeedRightEvent) {
 			Serial.print("               ");
 		}
 		Serial.println(event->getData());
 	}
-	else if (type == DistanceEvent) {
+	else */if (type == DistanceEvent) {
 		Serial.print("Distance=");
 		Serial.println(event->getData());
+	}
+	else if (type == ChassisForwardEvent) {
+		Serial.print("Forward: ");
+		Serial.println(event->getData());
+	}
+	else if (type == ChassisStopEvent) {
+		Serial.println("STOP!!!");
 	}
 	else if (type == ErrorEvent) {
 		Serial.print("Error=");
